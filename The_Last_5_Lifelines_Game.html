@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>The Last 5 Lifelines</title>
+<style>
+body{font-family:Arial;background:#eef5ff;text-align:center;padding:30px}
+.box{background:white;max-width:700px;margin:auto;padding:25px;border-radius:20px;box-shadow:0 5px 20px #aaa}
+button{padding:12px 25px;margin:10px;border:none;border-radius:20px;background:#1565c0;color:white;cursor:pointer}
+.option{display:block;width:80%;margin:10px auto;background:#eee;color:black}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>🌪️ The Last 5 Lifelines</h1>
+<div id="start">
+<input id="name" placeholder="Enter your name" style="padding:12px;width:70%">
+<h3>Select Your 5 Lifelines</h3>
+<label><input type="checkbox" value="Torch"> 🔦 Torch</label><br>
+<label><input type="checkbox" value="Water"> 💧 Water</label><br>
+<label><input type="checkbox" value="First Aid"> 🩹 First Aid</label><br>
+<label><input type="checkbox" value="Power Bank"> 🔋 Power Bank</label><br>
+<label><input type="checkbox" value="Rope"> 🪢 Rope</label><br>
+<label><input type="checkbox" value="Blanket"> 🧥 Blanket</label><br>
+<label><input type="checkbox" value="Food"> 🍫 Food</label><br>
+<label><input type="checkbox" value="Radio"> 📻 Radio</label><br>
+<label><input type="checkbox" value="Shoes"> 👟 Shoes</label><br>
+<button onclick="startGame()">Start</button>
+</div>
+<div id="game" class="hidden"><h2 id="question"></h2><div id="options"></div></div>
+<div id="end" class="hidden"><h2>✅ Thank you for participating!</h2><p>Your response has been submitted.</p></div>
+</div>
+<script>
+let name="",selected=[],current=0,answers=[];
+const scriptURL="YOUR_SCRIPT_URL_HERE";
+let questions=[
+["🌊 Flood: Water is rising and electricity is gone.","Rope"],
+["🌍 Earthquake: Move through damaged areas safely.","Shoes"],
+["🔥 Fire: Smoke is blocking visibility.","Blanket"],
+["⛈ Cyclone: Power and communication are down.","Radio"],
+["🏔 Landslide: Waiting for rescue.","Torch"],
+["🌋 Volcanic Ash: Protect yourself while leaving.","Blanket"],
+["⚡ Thunderstorm: Power failure at night.","Torch"],
+["🌵 Drought: Water sources are limited.","Water"],
+["🚑 Rescue delay: Survive until help arrives.","First Aid"]
+];
+function startGame(){
+name=document.getElementById("name").value;
+if(!name){alert("Enter name");return;}
+selected=[];
+document.querySelectorAll("input:checked").forEach(x=>selected.push(x.value));
+if(selected.length!=5){alert("Select exactly 5 items");return;}
+document.getElementById("start").className="hidden";
+document.getElementById("game").className="";
+show();
+}
+function show(){
+let q=questions[current];
+document.getElementById("question").innerHTML=q[0];
+let box=document.getElementById("options"); box.innerHTML="";
+selected.forEach(item=>{
+let b=document.createElement("button");
+b.className="option"; b.innerHTML=item;
+b.onclick=()=>{answers.push({question:q[0],answer:item,score:item==q[1]?5:3});current++;current<questions.length?show():submitData()};
+box.appendChild(b);
+});
+}
+function submitData(){
+fetch(scriptURL,{method:"POST",body:JSON.stringify({name,answers})});
+document.getElementById("game").className="hidden";
+document.getElementById("end").className="";
+}
+</script>
+</body>
+</html>
