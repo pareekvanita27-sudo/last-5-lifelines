@@ -70,6 +70,99 @@ fetch(scriptURL,{method:"POST",body:JSON.stringify({name,answers})});
 document.getElementById("game").className="hidden";
 document.getElementById("end").className="";
 }
+  <script>
+    const scriptURL="https://script.google.com/macros/s/AKfycbw8_skuWDAbqdSM-a13Az3sgKdEC-P2saDIhxkuYJ-Gh2HPKrzQB2H67UlfNL-Eh8WkUQ/exec";
+
+let selected=[];
+let score=0;
+let q=0;
+
+const situations=[
+["Earthquake: You are trapped under debris. What helps most?", "First Aid",5],
+["Flood: Water level is rising around you. Best choice?", "Radio",5],
+["Cyclone: You need to stay warm overnight.", "Blanket",5],
+["Forest fire: You need visibility in smoke.", "Torch",5],
+["Landslide: You need to move safely.", "Rope",5],
+["Storm: You need communication.", "Radio",5],
+["Disaster shelter: You need energy.", "Food",5],
+["Heavy rain: You need protection.", "Blanket",4],
+["Emergency injury: Immediate help needed.", "First Aid",5]
+];
+
+
+function startGame(){
+
+selected=[];
+
+document.querySelectorAll("input[type=checkbox]:checked")
+.forEach(x=>selected.push(x.value));
+
+if(selected.length!=5){
+alert("Select exactly 5 items");
+return;
+}
+
+document.getElementById("start").style.display="none";
+document.getElementById("game").style.display="block";
+
+showQuestion();
+
+}
+
+
+function showQuestion(){
+
+let s=situations[q];
+
+document.getElementById("question").innerHTML=s[0];
+
+let box=document.getElementById("options");
+
+box.innerHTML="";
+
+selected.forEach(item=>{
+
+box.innerHTML+=`
+<button onclick="answer('${item}',${s[2]})">${item}</button>
+`;
+
+});
+
+}
+
+
+function answer(item,marks){
+
+if(item==situations[q][1]){
+score+=marks;
+}
+
+q++;
+
+if(q>=situations.length){
+finish();
+}
+else{
+showQuestion();
+}
+
+}
+
+
+function finish(){
+
+document.getElementById("game").innerHTML=
+"<h2>Completed 🎉</h2><h3>Your score: "+score+"/45</h3>";
+
+fetch(scriptURL,{
+method:"POST",
+body:JSON.stringify({
+name:document.getElementById("name").value,
+score:score
+})
+});
+
+}
 </script>
 </body>
 </html>
